@@ -1,5 +1,5 @@
 import React from "react";
-import { DndProvider } from "react-dnd";
+import { DndProvider, useDrag } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 
 function Board() {
@@ -39,9 +39,30 @@ function Column({ title, data }) {
   );
 }
 function Card({ content }) {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: "card",
+    item: { content },
+    end: (item, monitor) => {
+      const dropResult = monitor.getDropResult();
+      if (item && dropResult)
+        console.log(`You dropped ${item.name} into ${dropResult.name}!`);
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+      handlerId: monitor.getHandlerId(),
+    }),
+  }));
+
+  const opacity = isDragging ? 0.4 : 1;
   return (
     <>
-      <div className="p-6 bg-white rounded-sm flex my-3">{content}</div>
+      <div
+        ref={drag}
+        className="p-6 bg-white rounded-sm flex my-3"
+        style={{ cursor: "grab", opacity }}
+      >
+        {content}
+      </div>
     </>
   );
 }
