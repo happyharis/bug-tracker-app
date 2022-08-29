@@ -1,4 +1,4 @@
-import { doc, onSnapshot } from "firebase/firestore";
+import { collection, doc, onSnapshot, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -16,17 +16,27 @@ function Board() {
 }
 
 function BoardBody() {
-  const columns = [];
-  const projectId = "4vNoCVtkf3Ony0ui3R4g";
+  const [columns, setColumns] = useState([]);
+  const projectId = "YOsEd6rZapnISPZIdoAg";
   const [title, setTitle] = useState("");
 
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, "project", projectId), (doc) => {
+    const unsub = onSnapshot(doc(db, "projects", projectId), (doc) => {
       setTitle(doc.data().title);
-
       console.log("onSnapshot");
     });
     return unsub;
+  }, []);
+
+  useEffect(() => {
+    const columnsQuery = query(
+      collection(db, "projects", projectId, "columns")
+    );
+    onSnapshot(columnsQuery, (snapshot) => {
+      const data = snapshot.docs.map((doc) => doc.data());
+      console.log("columns:", data);
+      setColumns(data);
+    });
   }, []);
 
   return (
@@ -35,8 +45,8 @@ function BoardBody() {
         <div className="pt-20"></div>
         <h1>{title}</h1>
         <div className="flex flex-row">
-          {columns?.map((board, index) => (
-            <Column key={index} title={board.name} data={board.cards} />
+          {columns?.map((column, index) => (
+            <Column key={index} title={column.title} data={[]} />
           ))}
         </div>
       </div>
