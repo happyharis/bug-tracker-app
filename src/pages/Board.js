@@ -1,5 +1,5 @@
 import { collection, doc, onSnapshot, query } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Column from "../components/Column";
@@ -14,6 +14,7 @@ function Board() {
     </div>
   );
 }
+export const ProjectContext = createContext();
 
 function BoardBody() {
   const [columns, setColumns] = useState([]);
@@ -33,7 +34,9 @@ function BoardBody() {
       collection(db, "projects", projectId, "columns")
     );
     onSnapshot(columnsQuery, (snapshot) => {
-      const data = snapshot.docs.map((doc) => doc.data());
+      const data = snapshot.docs.map((doc) => {
+        return { ...doc.data(), id: doc.id };
+      });
       console.log("columns:", data);
       setColumns(data);
     });
@@ -46,7 +49,12 @@ function BoardBody() {
         <h1>{title}</h1>
         <div className="flex flex-row">
           {columns?.map((column, index) => (
-            <Column key={index} title={column.title} data={[]} />
+            <ProjectContext.Provider
+              value={{ projectId, columnId: column.id }}
+              key={index}
+            >
+              <Column key={index} title={column.title} />
+            </ProjectContext.Provider>
           ))}
         </div>
       </div>
