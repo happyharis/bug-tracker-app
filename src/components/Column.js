@@ -37,14 +37,14 @@ export default function Column({ title }) {
     }),
   }));
   const isActive = canDrop && isOver;
-  const bgColor = isActive ? "bg-blue-500" : "bg-gray-100";
+  const bgColor = isActive ? "bg-blue-500" : "bg-gray-200";
   return (
     <>
       <div
         ref={drop}
-        className={`p-6 h-96 w-3/12 ml-20 ${bgColor} rounded-sm shadow-md flex flex-col`}
+        className={`p-2 w-80 ${bgColor} rounded-sm shadow-md flex flex-col text-left`}
       >
-        <div className="text-l font-medium text-blue-600">{title}</div>
+        <div className="py-1 px-1 text-base font-medium">{title}</div>
         {cards.map((card) => {
           return <Card content={card.title} key={card.id} />;
         })}

@@ -44,9 +44,8 @@ function BoardBody() {
 
   return (
     <>
-      <div className="bg-indigo-500 h-screen">
-        <div className="pt-20"></div>
-        <h1>{title}</h1>
+      <div className="bg-indigo-400 h-screen p-6">
+        <h1 className="text-left py-4 font-bold text-xl">{title}</h1>
         <div className="flex flex-row">
           {columns?.map((column, index) => (
             <ProjectContext.Provider
@@ -56,6 +55,11 @@ function BoardBody() {
               <Column key={index} title={column.title} />
             </ProjectContext.Provider>
           ))}
+          <button
+            className={`p-2 max-h-10 w-80 bg-slate-500/20 hover:bg-slate-500/60 rounded-sm text-left ml-3 `}
+          >
+            <p className="font-medium">+ Add another list</p>
+          </button>
         </div>
       </div>
     </>
