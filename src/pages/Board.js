@@ -1,8 +1,8 @@
+import { doc, onSnapshot } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import Column from "../components/Column";
-import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 
 function Board() {
@@ -16,37 +16,26 @@ function Board() {
 }
 
 function BoardBody() {
-  const [boards, setBoards] = useState([]);
-
-  const getBoard = async (doc) => {
-    const board = doc.data();
-    const cards = await getDocs(collection(db, `boards/${doc.id}/cards`)).then(
-      (snapshot) => snapshot.docs.map((doc) => doc.data().title)
-    );
-    const boardData = { ...board, cards };
-    return boardData;
-  };
-
-  async function initBoard() {
-    const boardsSnapshot = await getDocs(collection(db, "boards"));
-    const getBoards = async () => {
-      return Promise.all(boardsSnapshot.docs.map((doc) => getBoard(doc)));
-    };
-    const boards = await getBoards();
-    setBoards(boards);
-  }
+  const columns = [];
+  const projectId = "4vNoCVtkf3Ony0ui3R4g";
+  const [title, setTitle] = useState("");
 
   useEffect(() => {
-    initBoard();
-    return () => {};
-  });
+    const unsub = onSnapshot(doc(db, "project", projectId), (doc) => {
+      setTitle(doc.data().title);
+
+      console.log("onSnapshot");
+    });
+    return unsub;
+  }, []);
 
   return (
     <>
       <div className="bg-indigo-500 h-screen">
         <div className="pt-20"></div>
+        <h1>{title}</h1>
         <div className="flex flex-row">
-          {boards?.map((board, index) => (
+          {columns?.map((board, index) => (
             <Column key={index} title={board.name} data={board.cards} />
           ))}
         </div>
