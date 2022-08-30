@@ -46,12 +46,3 @@ function BoardBootstrap() {
 }
 
 export default BoardBootstrap;
-
-{
-  /* <div className="card h-100" style={{ width: "18rem" }}>
-          <div className="card-body">This is some text within a card body.</div>
-        </div>
-        <div className="card h-100" style={{ width: "18rem" }}>
-          <div className="card-body">This is some .</div>
-        </div> */
-}
