@@ -1,4 +1,4 @@
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, query } from "firebase/firestore";
 import { useContext, useEffect, useState } from "react";
 import { useDrop } from "react-dnd";
 import { db } from "../firebase";
@@ -67,10 +67,71 @@ export default function Column({ title }) {
           return <Card content={card.title} key={card.id} />;
         })}
 
-        <button className="p-2 text-grey-dark hover:bg-gray-300 w-full text-left">
-          + Add a card
-        </button>
+        <AddCardButton cardsLength={cards.length} />
       </div>
     </>
   );
+}
+
+function AddCardButton({ cardsLength }) {
+  const [isAdding, setIsAdding] = useState(false);
+  const [cardTitle, setCardTitle] = useState("");
+  const projectData = useContext(ProjectContext);
+  const projectId = projectData.projectId;
+  const columnId = projectData.columnId;
+
+  const addNewCard = async () => {
+    try {
+      await addDoc(collection(db, "projects", projectId, "columns", columnId), {
+        title: cardTitle,
+        id: cardsLength + 1,
+      });
+      setCardTitle("");
+      setIsAdding(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const AddCard = () => {
+    return (
+      <button
+        onClick={() => setIsAdding(!isAdding)}
+        className="p-2 text-grey-dark hover:bg-gray-300 w-full text-left opacity-60 hover:opacity-80"
+      >
+        <p className="font-medium"> + Add a card</p>
+      </button>
+    );
+  };
+
+  const AddCardForm = () => {
+    return (
+      <>
+        <textarea
+          className="w-full"
+          placeholder="Enter list title..."
+          onChange={(e) => {
+            console.log(cardTitle);
+            setCardTitle(e.target.value);
+          }}
+          value={cardTitle}
+        />
+        <div className="flex flex-row">
+          <button
+            className="px-3 py-2 rounded-md text-white bg-blue-500 hover:bg-blue-600 my-2 "
+            onClick={() => addNewCard()}
+          >
+            Add card
+          </button>
+          <button
+            className="text-3xl px-3 py-2"
+            onClick={() => setIsAdding(!isAdding)}
+          >
+            x
+          </button>
+        </div>
+      </>
+    );
+  };
+  return isAdding ? <AddCardForm /> : <AddCard />;
 }

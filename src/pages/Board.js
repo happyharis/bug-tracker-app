@@ -35,8 +35,9 @@ function BoardBody() {
     );
     onSnapshot(columnsQuery, (snapshot) => {
       const data = snapshot.docs.map((doc) => {
-        return { ...doc.data(), id: doc.id };
+        return { ...doc.data(), docId: doc.id };
       });
+      data.sort((a, b) => a.id - b.id);
       console.log("columns:", data);
       setColumns(data);
     });
@@ -49,27 +50,28 @@ function BoardBody() {
         <div className="flex items-start overflow-x-auto">
           {columns?.map((column, index) => (
             <ProjectContext.Provider
-              value={{ projectId, columnId: column.id }}
+              value={{ projectId, columnId: column.docId }}
               key={index}
             >
               <Column key={index} title={column.title} />
             </ProjectContext.Provider>
           ))}
-          <AnotherListButton />
+          <AnotherListButton columnLength={columns.length} />
         </div>
       </div>
     </>
   );
 }
 
-function AnotherListButton() {
+function AnotherListButton({ columnLength }) {
   const [isAdding, setIsAdding] = useState(false);
-  const [columnTitle, setColumnTitle] = useState("hello");
+  const [columnTitle, setColumnTitle] = useState("");
 
   const addNewColumn = async () => {
     try {
       await addDoc(collection(db, "projects", projectId, "columns"), {
         title: columnTitle,
+        id: columnLength + 1,
       });
       setColumnTitle("");
       setIsAdding(false);
@@ -98,6 +100,7 @@ function AnotherListButton() {
           placeholder="Enter list title..."
           onChange={(e) => setColumnTitle(e.target.value)}
           value={columnTitle}
+          autoFocus
         />
         <div className="flex flex-row">
           <button
