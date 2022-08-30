@@ -1,36 +1,37 @@
 import React from "react";
 
+const lists = [
+  { title: "Doing", index: 0, docId: "asdf" },
+  { title: "Done", index: 1, docId: "asdffff" },
+];
+
 function BoardBootstrap() {
+  const CardList = ({ title }) => {
+    return (
+      <div style={{ width: "275px" }}>
+        <p className="fw-semibold">{title}</p>
+
+        <div className="card mb-2">
+          <div className="card-body">This is some text within a card body.</div>
+        </div>
+
+        <button
+          type="button"
+          className="btn btn-outline-dark w-100 text-start"
+          style={{ borderColor: "white" }}
+        >
+          + New
+        </button>
+      </div>
+    );
+  };
   return (
     <div className="container">
       <div className="row flex-nowrap mt-4">
-        <div style={{ width: "275px" }}>
-          <p className="fw-semibold">Doing</p>
+        {lists.map((list) => (
+          <CardList title={list.title} />
+        ))}
 
-          <div className="card">
-            <div className="card-body">
-              This is some text within a card body.
-            </div>
-          </div>
-
-          <button
-            type="button"
-            className="btn btn-outline-dark w-100 text-start"
-            style={{ borderColor: "white" }}
-          >
-            + New
-          </button>
-        </div>
-
-        <div style={{ width: "275px" }}>
-          <p className="fw-semibold">Done</p>
-
-          <div className="card">
-            <div className="card-body">
-              This is some text within a card body.
-            </div>
-          </div>
-        </div>
         <div className="col h-100" style={{ width: "275px" }}>
           <button
             type="button"
