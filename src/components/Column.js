@@ -42,7 +42,7 @@ export default function Column({ title }) {
     <>
       <div
         ref={drop}
-        className={`p-2 w-80 ${bgColor} rounded-sm shadow-md flex flex-col text-left`}
+        className={`p-2 w-[500px] shrink-0 ${bgColor} rounded-sm shadow-md flex flex-col text-left ml-3 first:ml-0`}
       >
         <div className="py-1 px-1 text-base font-medium">{title}</div>
         {cards.map((card) => {
