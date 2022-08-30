@@ -20,8 +20,8 @@ export default function Card({ content }) {
     <>
       <div
         ref={drag}
-        className="p-2 bg-white rounded-sm flex my-3"
-        style={{ cursor: "grab", opacity }}
+        className="p-2 bg-white border-b border-gray-50 hover:bg-gray-100 flex my-3 shadow-sm"
+        style={{ cursor: "pointer", opacity }}
       >
         {content}
       </div>

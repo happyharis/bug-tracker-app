@@ -44,9 +44,9 @@ function BoardBody() {
 
   return (
     <>
-      <div className="bg-indigo-400 h-screen p-6">
-        <h1 className="text-left py-4 font-bold text-xl">{title}</h1>
-        <div className="flex flex-row">
+      <div className="bg-blue-400 p-6 h-screen">
+        <h1 className="py-4 font-bold text-xl text-white">{title}</h1>
+        <div className="flex items-start overflow-x-auto">
           {columns?.map((column, index) => (
             <ProjectContext.Provider
               value={{ projectId, columnId: column.id }}
@@ -81,7 +81,7 @@ function AnotherListButton() {
     return (
       <button
         onClick={() => setIsAdding(!isAdding)}
-        className={`p-2 max-h-10 w-80 bg-slate-500/20 hover:bg-slate-500/60 rounded-sm text-left ml-3 `}
+        className={`p-2 w-[275px] shrink-0 bg-slate-500/20 hover:bg-slate-500/60 rounded-sm text-left ml-3 `}
       >
         <p className="font-medium">+ Add another list</p>
       </button>
@@ -91,7 +91,7 @@ function AnotherListButton() {
   const AddAnotherListForm = () => {
     return (
       <div
-        className={`p-2 w-80 bg-gray-200 rounded-sm shadow-md flex flex-col text-left ml-3`}
+        className={`p-2 w-[275px] shrink-0 bg-gray-200 rounded-sm shadow-md flex flex-col text-left ml-3`}
       >
         <input
           className="placeholder:text-slate-400 p-3"
