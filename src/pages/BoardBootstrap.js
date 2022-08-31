@@ -1,16 +1,29 @@
-import React, { useState } from "react";
+import { collection, onSnapshot, query } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import { db } from "../firebase";
 
-const lists = [
-  { title: "Doing", id: 0, docId: "asdf" },
-  { title: "Done", id: 1, docId: "asdffff" },
-];
+export default function BoardBootstrap({ projectId = "YOsEd6rZapnISPZIdoAg" }) {
+  const [lists, setLists] = useState([]);
 
-export default function BoardBootstrap() {
+  useEffect(() => {
+    const columnsQuery = query(
+      collection(db, "projects", projectId, "columns")
+    );
+    onSnapshot(columnsQuery, (snapshot) => {
+      const data = snapshot.docs.map((doc) => {
+        return { ...doc.data(), docId: doc.id };
+      });
+      data.sort((a, b) => a.id - b.id);
+      setLists(data);
+    });
+  }, [projectId]);
+
+  console.log("BoardBootstrap render");
   return (
     <div className="container">
       <div className="row flex-nowrap mt-4">
         {lists.map((list) => (
-          <CardList title={list.title} key={list.id} />
+          <CardList title={list.title} key={list.docId} />
         ))}
 
         <div className="col h-100" style={{ width: "275px" }}>
