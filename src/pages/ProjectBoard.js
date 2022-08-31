@@ -1,9 +1,22 @@
 import { addDoc, collection, onSnapshot, query } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import { db } from "../firebase";
 
 const ProjectContext = createContext();
-export default function BoardBootstrap({ projectId = "YOsEd6rZapnISPZIdoAg" }) {
+
+export default function ProjectBoard() {
+  return (
+    <div>
+      <DndProvider backend={HTML5Backend}>
+        <ProjectBoardBody />
+      </DndProvider>
+    </div>
+  );
+}
+
+function ProjectBoardBody({ projectId = "YOsEd6rZapnISPZIdoAg" }) {
   const [lists, setLists] = useState([]);
 
   useEffect(() => {
