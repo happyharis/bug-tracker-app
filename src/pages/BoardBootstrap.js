@@ -1,7 +1,8 @@
 import { addDoc, collection, onSnapshot, query } from "firebase/firestore";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { db } from "../firebase";
 
+const ProjectContext = createContext();
 export default function BoardBootstrap({ projectId = "YOsEd6rZapnISPZIdoAg" }) {
   const [lists, setLists] = useState([]);
 
@@ -34,7 +35,12 @@ export default function BoardBootstrap({ projectId = "YOsEd6rZapnISPZIdoAg" }) {
     <div className="container">
       <div className="row flex-nowrap mt-4">
         {lists.map((list) => (
-          <CardList title={list.title} key={list.docId} />
+          <ProjectContext.Provider
+            value={{ projectId, columnId: list.docId }}
+            key={list.docId}
+          >
+            <CardList title={list.title} />
+          </ProjectContext.Provider>
         ))}
 
         <div className="col h-100" style={{ width: "275px" }}>
@@ -52,14 +58,35 @@ export default function BoardBootstrap({ projectId = "YOsEd6rZapnISPZIdoAg" }) {
 }
 
 function CardList({ title }) {
+  const [cards, setCards] = useState([]);
+  const projectContext = useContext(ProjectContext);
+  const projectId = projectContext.projectId;
+  const columnId = projectContext.columnId;
+  useEffect(() => {
+    const columnsQuery = query(
+      collection(db, "projects", projectId, "columns", columnId, "cards")
+    );
+    onSnapshot(columnsQuery, (snapshot) => {
+      const data = snapshot.docs.map((doc) => {
+        return { ...doc.data(), docId: doc.id };
+      });
+      data.sort((a, b) => a.id - b.id);
+      setCards(data);
+    });
+  }, [projectId, columnId]);
+
   console.log(`CardList ${title} render`);
   return (
     <div style={{ width: "275px" }}>
       <p className="fw-semibold">{title}</p>
 
-      <div className="card mb-2">
-        <div className="card-body">This is some text within a card body.</div>
-      </div>
+      {cards.map((card) => {
+        return (
+          <div className="card mb-2" key={card.docId}>
+            <div className="card-body">{card.title}</div>
+          </div>
+        );
+      })}
 
       <ModalButton
         key={title}
