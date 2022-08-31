@@ -1,4 +1,4 @@
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { addDoc, collection, onSnapshot, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { db } from "../firebase";
 
@@ -18,6 +18,17 @@ export default function BoardBootstrap({ projectId = "YOsEd6rZapnISPZIdoAg" }) {
     });
   }, [projectId]);
 
+  const addNewList = async (title) => {
+    try {
+      await addDoc(collection(db, "projects", projectId, "columns"), {
+        title,
+        id: lists.length + 1,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   console.log("BoardBootstrap render");
   return (
     <div className="container">
@@ -31,7 +42,7 @@ export default function BoardBootstrap({ projectId = "YOsEd6rZapnISPZIdoAg" }) {
             key={"new-list"}
             buttonTitle="+"
             modalHeader="new-list"
-            onPress={(text) => console.log(text)}
+            onPress={(text) => addNewList(text)}
             isFullWidth={false}
           />
         </div>
@@ -41,6 +52,7 @@ export default function BoardBootstrap({ projectId = "YOsEd6rZapnISPZIdoAg" }) {
 }
 
 function CardList({ title }) {
+  console.log(`CardList ${title} render`);
   return (
     <div style={{ width: "275px" }}>
       <p className="fw-semibold">{title}</p>
@@ -77,13 +89,13 @@ function ModalButton({
         className={`btn btn-outline-dark ${width} text-start`}
         style={{ borderColor: "white" }}
         data-bs-toggle="modal"
-        data-bs-target={`#${modalHeader}-addListModal`}
+        data-bs-target={`#${modalHeader}-modal`}
       >
         {buttonTitle}
       </button>
       <div
         className="modal fade"
-        id={modalHeader + "-addListModal"}
+        id={modalHeader + "-modal"}
         tabIndex="-1"
         aria-labelledby={modalHeader + "-modalLabel"}
         aria-hidden="true"
@@ -126,9 +138,13 @@ function ModalButton({
                 Close
               </button>
               <button
-                onClick={() => onPress(input)}
+                onClick={() => {
+                  onPress(input);
+                  setInput("");
+                }}
                 type="button"
                 className="btn btn-primary"
+                data-bs-dismiss="modal"
               >
                 Save
               </button>
