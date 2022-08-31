@@ -75,6 +75,20 @@ function CardList({ title }) {
     });
   }, [projectId, columnId]);
 
+  const addNewCard = async (title) => {
+    try {
+      await addDoc(
+        collection(db, "projects", projectId, "columns", columnId, "cards"),
+        {
+          title,
+          id: cards.length + 1,
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   console.log(`CardList ${title} render`);
   return (
     <div style={{ width: "275px" }}>
@@ -82,7 +96,7 @@ function CardList({ title }) {
 
       {cards.map((card) => {
         return (
-          <div className="card mb-2" key={card.docId}>
+          <div className="card mb-2 shadow-sm" key={card.docId}>
             <div className="card-body">{card.title}</div>
           </div>
         );
@@ -92,10 +106,7 @@ function CardList({ title }) {
         key={title}
         buttonTitle="+ New"
         modalHeader={title}
-        onPress={(text) => {
-          console.log("+new");
-          console.log(text);
-        }}
+        onPress={(text) => addNewCard(text)}
       />
     </div>
   );
