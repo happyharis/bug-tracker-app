@@ -1,6 +1,6 @@
 import { addDoc, collection, onSnapshot, query } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { DndProvider, useDrop } from "react-dnd";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { db } from "../firebase";
 
@@ -117,14 +117,10 @@ function CardList({ title }) {
   return (
     <div ref={drop} style={{ width: "275px" }}>
       <p className="fw-semibold">{title}</p>
-      {isActive && <hr style={{ borderTop: `3px solid ${color}` }} />}
+      <hr style={{ borderTop: `3px solid ${color}`, margin: 0 }} />
 
       {cards.map((card) => {
-        return (
-          <div className="card mb-2 shadow-sm" key={card.docId}>
-            <div className="card-body">{card.title}</div>
-          </div>
-        );
+        return <Card card={card} key={card.docId} />;
       })}
 
       <ModalButton
@@ -134,6 +130,37 @@ function CardList({ title }) {
         onPress={(text) => addNewCard(text)}
       />
     </div>
+  );
+}
+
+function Card({ card }) {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: "card",
+    item: { card },
+    end: (item, monitor) => {
+      const dropResult = monitor.getDropResult();
+      if (item && dropResult) {
+        console.log(`You dropped ${item.card.title} into ${dropResult.name}!`);
+      }
+    },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+      handlerId: monitor.getHandlerId(),
+    }),
+  }));
+  const opacity = isDragging ? "opacity-50" : "opacity-100";
+
+  return (
+    <>
+      <div
+        ref={drag}
+        className={`card mb-2 shadow-sm ${opacity}`}
+        style={{ cursor: "pointer", opacity }}
+        key={card.docId}
+      >
+        <div className="card-body">{card.title}</div>
+      </div>
+    </>
   );
 }
 
