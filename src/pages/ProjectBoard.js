@@ -1,6 +1,6 @@
 import { addDoc, collection, onSnapshot, query } from "firebase/firestore";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { DndProvider } from "react-dnd";
+import { DndProvider, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { db } from "../firebase";
 
@@ -102,10 +102,22 @@ function CardList({ title }) {
     }
   };
 
+  const [{ canDrop, isOver }, drop] = useDrop(() => ({
+    accept: "card",
+    drop: () => ({ name: title }),
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      canDrop: monitor.canDrop(),
+    }),
+  }));
+  const isActive = canDrop && isOver;
+  const color = isActive ? "blue" : "white";
+
   console.log(`CardList ${title} render`);
   return (
-    <div style={{ width: "275px" }}>
+    <div ref={drop} style={{ width: "275px" }}>
       <p className="fw-semibold">{title}</p>
+      {isActive && <hr style={{ borderTop: `3px solid ${color}` }} />}
 
       {cards.map((card) => {
         return (
